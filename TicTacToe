@@ -1,0 +1,167 @@
+using System;
+
+namespace TicTacToeSpiel
+{
+	class Program
+	{
+		// Main Methode
+		static void Main()
+		{
+			// Array erstellen und Felder sichtbar machen (mit Ausgansdaten)
+			string[,] spielbrett = new string[3,3];
+			spielbrett[0,0] = "1"; spielbrett[0,1] = "2"; spielbrett[0,2] = "3";
+			spielbrett[1,0] = "4"; spielbrett[1,1] = "5"; spielbrett[1,2] = "6";
+			spielbrett[2,0] = "7"; spielbrett[2,1] = "8"; spielbrett[2,2] = "9";
+			
+			// Spielbrett anzeigen
+			SpielbrettAnzeigen(spielbrett);
+			
+			// Spieler, der dran ist (X oder O)
+			string aktuellerSpieler = "O";
+			
+			// Spielzug Methode rufen und laufen lassen bis das Spielbrett voll is
+			string gewinner = "";
+			for (int i = 0; i < 9; i++)
+			{
+				Console.WriteLine("Spieler am Zug: " + aktuellerSpieler);
+				aktuellerSpieler = Spielzug(spielbrett, aktuellerSpieler);
+				gewinner = GewinnerCheck(spielbrett);
+				if(!string.IsNullOrEmpty(gewinner))
+				{
+					Console.WriteLine($"Gewonnen hat Spieler {gewinner}. Herzlichen Glückwunsch!");
+					break;
+				}
+			}
+			if (string.IsNullOrEmpty(gewinner))
+			{
+				Console.WriteLine("Unentschieden");
+			}
+		}
+		
+		// Prüfen ob jemand gewonnen hat
+		static string GewinnerCheck(string[,] spielbrett)
+		{
+			//Oben prüfen (Reihe)
+			string obenLinks = spielbrett[0,0];
+			string obenMitte = spielbrett[0,1];
+			string obenRechts = spielbrett[0,2]; 
+			
+			if (obenLinks == obenMitte && obenMitte == obenRechts && obenLinks != "1" && obenMitte != "2" && obenRechts != "3")
+			{
+				return obenLinks;
+			}
+			
+			//Mitte prüfen (Reihe)
+			string mitteLinks = spielbrett[1,0];
+			string mitteMitteReihe = spielbrett[1,1];
+			string mitteRechts = spielbrett[1,2];
+			
+			if (mitteLinks == mitteMitteReihe && mitteMitteReihe == mitteRechts && mitteLinks != "4" && mitteMitteReihe != "5" && mitteRechts != "6")
+			{
+				return mitteLinks;
+			}
+			
+			//Unten prüfen (Reihe)
+			string untenLinks = spielbrett[2,0];
+			string untenMitte = spielbrett[2,1];
+			string untenRechts = spielbrett[2,2]; 
+			
+			if (untenLinks == untenMitte && untenMitte == untenRechts && untenLinks != "7" && untenMitte != "8" && untenRechts != "9")
+			{
+				return untenLinks;
+			}
+			
+			//Links prüfen (Spalte)
+			string linksOben = spielbrett[0,0];
+			string linksMitte = spielbrett[1,0];
+			string linksUnten = spielbrett[2,0];
+			
+			if(linksOben == linksMitte && linksMitte == linksUnten && linksOben != "1" && linksMitte != "4" && linksUnten != "7")
+			{
+				return linksOben;
+			}
+			
+			//Mitte prüfen (Spalte)
+			string mitteOben = spielbrett[0,1];
+			string mitteMitteSpalte = spielbrett[1,1];
+			string mitteUnten = spielbrett[2,1];
+			
+			if(mitteOben == mitteMitteSpalte && mitteMitteSpalte == mitteUnten && mitteOben != "2" && mitteMitteSpalte != "5" && mitteUnten != "8")
+			{
+				return mitteOben;
+			}
+			
+			//Rechts prüfen (Spalte)
+			string rechtsOben = spielbrett[0,2];
+			string rechtsMitte = spielbrett[1,2];
+			string rechtsUnten = spielbrett[2,2];
+			
+			if(rechtsOben == rechtsMitte && rechtsMitte == rechtsUnten && rechtsOben != "3" && rechtsMitte != "6" && rechtsUnten != "9")
+			{
+				return rechtsOben;
+			}
+			
+			//Diagonale links oben nach rechts unten prüfen
+			string diagonale0_0 = spielbrett[0,0];
+			string diagonale11_1 = spielbrett[1,1];
+			string diagonale2_2 = spielbrett[2,2];
+			
+			if(diagonale0_0 == diagonale11_1 && diagonale11_1 == diagonale2_2 && diagonale0_0 != "1" && diagonale11_1 != "5" && diagonale2_2 != "9")
+			{
+				return  diagonale0_0;
+			}
+			
+			//Diagonale rechts oben nach links unten prüfen
+			string diagonale0_2 = spielbrett[0,2];
+			string diagonale21_1 = spielbrett[1,1];
+			string diagonale2_0 = spielbrett[2,0];
+			if(diagonale0_2 == diagonale21_1 && diagonale21_1 == diagonale2_0 && diagonale0_2 != "3" && diagonale21_1 != "5" && diagonale2_0 != "1")
+			{
+				return  diagonale0_2;
+			}
+			return "";
+		}
+		
+		//Spielzug Methode
+		static string Spielzug(string[,] spielbrett, string aktuellerSpieler)
+		{
+			// Spieler nach Input fragen
+			Console.WriteLine("Welche Position möchten Sie auswählen (1-9): ");
+		 	string spielerEingabe = Console.ReadLine();
+			Console.WriteLine($"Sie haben Position {spielerEingabe} gewählt.");
+			Console.WriteLine("--------------------");
+			
+			// String in Integer umwandeln
+			int konvertierteEingabe = int.Parse(spielerEingabe);
+			
+			// Input zuordnen
+			int neuePosition = konvertierteEingabe - 1;
+			int richtigeZeile = neuePosition / 3;
+			int richtigeSpalte= neuePosition % 3;
+			
+			// Symbol platzieren
+			spielbrett[richtigeZeile,richtigeSpalte] = $"{aktuellerSpieler}";
+			SpielbrettAnzeigen(spielbrett);
+			Console.WriteLine("--------------------");
+			
+			// Spieler wechseln
+			if (aktuellerSpieler == "O")
+			{
+				return "X";
+			}
+			else{
+				return "O";
+			}
+		}
+		
+		// Spielbrett anzeigen Methode
+		static void SpielbrettAnzeigen(string[,] spielbrett)
+		{
+			Console.WriteLine($"{spielbrett[0,0]} | {spielbrett[0,1]} | {spielbrett[0,2]}");
+			Console.WriteLine("----------");
+			Console.WriteLine($"{spielbrett[1,0]} | {spielbrett[1,1]} | {spielbrett[1,2]}");
+			Console.WriteLine("----------");
+			Console.WriteLine($"{spielbrett[2,0]} | {spielbrett[2,1]} | {spielbrett[2,2]}");
+		}
+	}
+}
