@@ -13,11 +13,6 @@ namespace TicTacToeSpiel
 			spielbrett[1,0] = "4"; spielbrett[1,1] = "5"; spielbrett[1,2] = "6";
 			spielbrett[2,0] = "7"; spielbrett[2,1] = "8"; spielbrett[2,2] = "9";
 			
-			/*
-			// Spielbrett anzeigen
-			SpielbrettAnzeigen(spielbrett);
-			*/
-			
 			// Spieler, der dran ist (X oder O)
 			string aktuellerSpieler = "O";
 			
@@ -25,6 +20,9 @@ namespace TicTacToeSpiel
 			int aktuelleRunde = 1;
 			
 			// Spielzug Methode rufen und laufen lassen bis Spieler "nein" auswählen
+			// Anzahl Gewinne speichern
+			int spielerO = 0;
+			int spielerX = 0;
 			bool nochmalSpielen = true;
 			while (nochmalSpielen)
 			{
@@ -53,6 +51,19 @@ namespace TicTacToeSpiel
 					if(!string.IsNullOrEmpty(gewinner))
 					{
 						Console.WriteLine($"Gewonnen hat Spieler {gewinner} nach {aktuelleRunde - 1} Runden. Herzlichen Glückwunsch!");
+						Console.WriteLine("Der aktuelle Spielstand ist:");
+						//Spielstand prüfen und erhöhen
+						if (gewinner == "O")
+						{
+							spielerO++;
+						}
+						else if (gewinner == "X")
+						{
+							spielerX++;
+						}
+						Console.WriteLine($"Spieler O: {spielerO} Punkte");
+						Console.WriteLine($"Spieler X: {spielerX} Punkte");
+						Console.WriteLine("--------------------");
 						break;
 					}
 				}
