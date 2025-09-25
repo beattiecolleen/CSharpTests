@@ -19,16 +19,21 @@ namespace TicTacToeSpiel
 			// Spieler, der dran ist (X oder O)
 			string aktuellerSpieler = "O";
 			
+			// Rundenzähler
+			int aktuelleRunde = 1;
+			
 			// Spielzug Methode rufen und laufen lassen bis das Spielbrett voll is
 			string gewinner = "";
 			for (int i = 0; i < 9; i++)
 			{
+				Console.WriteLine("Runde: " + aktuelleRunde);
 				Console.WriteLine("Spieler am Zug: " + aktuellerSpieler);
 				aktuellerSpieler = Spielzug(spielbrett, aktuellerSpieler);
+				aktuelleRunde++;
 				gewinner = GewinnerCheck(spielbrett);
 				if(!string.IsNullOrEmpty(gewinner))
 				{
-					Console.WriteLine($"Gewonnen hat Spieler {gewinner}. Herzlichen Glückwunsch!");
+					Console.WriteLine($"Gewonnen hat Spieler {gewinner} nach {aktuelleRunde} Runden. Herzlichen Glückwunsch!");
 					break;
 				}
 			}
@@ -115,7 +120,7 @@ namespace TicTacToeSpiel
 			string diagonale0_2 = spielbrett[0,2];
 			string diagonale21_1 = spielbrett[1,1];
 			string diagonale2_0 = spielbrett[2,0];
-			if(diagonale0_2 == diagonale21_1 && diagonale21_1 == diagonale2_0 && diagonale0_2 != "3" && diagonale21_1 != "5" && diagonale2_0 != "1")
+			if(diagonale0_2 == diagonale21_1 && diagonale21_1 == diagonale2_0 && diagonale0_2 != "3" && diagonale21_1 != "5" && diagonale2_0 != "7")
 			{
 				return  diagonale0_2;
 			}
@@ -125,24 +130,50 @@ namespace TicTacToeSpiel
 		//Spielzug Methode
 		static string Spielzug(string[,] spielbrett, string aktuellerSpieler)
 		{
-			// Spieler nach Input fragen
-			Console.WriteLine("Welche Position möchten Sie auswählen (1-9): ");
-		 	string spielerEingabe = Console.ReadLine();
-			Console.WriteLine($"Sie haben Position {spielerEingabe} gewählt.");
-			Console.WriteLine("--------------------");
-			
-			// String in Integer umwandeln
-			int konvertierteEingabe = int.Parse(spielerEingabe);
-			
-			// Input zuordnen
-			int neuePosition = konvertierteEingabe - 1;
-			int richtigeZeile = neuePosition / 3;
-			int richtigeSpalte= neuePosition % 3;
-			
-			// Symbol platzieren
-			spielbrett[richtigeZeile,richtigeSpalte] = $"{aktuellerSpieler}";
-			SpielbrettAnzeigen(spielbrett);
-			Console.WriteLine("--------------------");
+			//Spieler nach Input fragen und Input validieren; fragen bis valider Input eingegeben wurde
+			while (true)
+			{
+				// Input abfragen und lesen
+				Console.WriteLine("Welche Position möchten Sie auswählen (1-9): ");
+				string spielerEingabe = Console.ReadLine();
+				
+				// Input validieren
+				if (int.TryParse(spielerEingabe, out int konvertierteEingabe))
+				{
+					// Prüfen, ob der Input in range ist
+					if (konvertierteEingabe >= 1 && konvertierteEingabe <=9)
+					{
+						// Input zuordnen
+						int neuePosition = konvertierteEingabe - 1;
+						int richtigeZeile = neuePosition / 3;
+						int richtigeSpalte= neuePosition % 3;
+						
+						// Prüfen, ob das Feld schon belegt ist
+						if (spielbrett[richtigeZeile,richtigeSpalte] != "O" && spielbrett[richtigeZeile,richtigeSpalte] != "X")
+						{
+							// Symbol platzieren
+							spielbrett[richtigeZeile,richtigeSpalte] = $"{aktuellerSpieler}";
+							SpielbrettAnzeigen(spielbrett);
+							Console.WriteLine("--------------------");
+							break;
+						}
+						else
+						{
+							Console.WriteLine("Dieses Feld ist schon belegt. Bitte versuchen Sie es erneut.");
+							continue;
+						}
+					}
+					else
+					{
+						Console.WriteLine("Die Nummer, die Sie eingegeben haben liegt nicht zwischen 1 und 9. Bitte versuchen Sie es erneut.");
+						continue;
+					}
+				}
+				else
+				{
+					Console.WriteLine("Ihre Eingabe ist nicht korrekt. Bitte versuchen Sie es erneut.");
+				}
+			}
 			
 			// Spieler wechseln
 			if (aktuellerSpieler == "O")
@@ -157,11 +188,57 @@ namespace TicTacToeSpiel
 		// Spielbrett anzeigen Methode
 		static void SpielbrettAnzeigen(string[,] spielbrett)
 		{
-			Console.WriteLine($"{spielbrett[0,0]} | {spielbrett[0,1]} | {spielbrett[0,2]}");
+			// Erste Zeile anzeigen
+			FarbigesSymbolAnzeigen(spielbrett[0,0]);
+			Console.Write("|");
+			FarbigesSymbolAnzeigen(spielbrett[0,1]);
+			Console.Write("|");
+			FarbigesSymbolAnzeigen(spielbrett[0,2]);
+			Console.WriteLine();
 			Console.WriteLine("----------");
-			Console.WriteLine($"{spielbrett[1,0]} | {spielbrett[1,1]} | {spielbrett[1,2]}");
+			
+			// Zweite Zeile anzeigen
+			FarbigesSymbolAnzeigen(spielbrett[1,0]);
+			Console.Write("|");
+			FarbigesSymbolAnzeigen(spielbrett[1,1]);
+			Console.Write("|");
+			FarbigesSymbolAnzeigen(spielbrett[1,2]);
+			Console.WriteLine();
 			Console.WriteLine("----------");
-			Console.WriteLine($"{spielbrett[2,0]} | {spielbrett[2,1]} | {spielbrett[2,2]}");
+			
+			// Dritte Zeile anzeigen
+			FarbigesSymbolAnzeigen(spielbrett[2,0]);
+			Console.Write("|");
+			FarbigesSymbolAnzeigen(spielbrett[2,1]);
+			Console.Write("|");
+			FarbigesSymbolAnzeigen(spielbrett[2,2]);
+			Console.WriteLine();
+		}
+		
+		// Farbige Symbole anzeigen
+		static void FarbigesSymbolAnzeigen(string symbol)
+		{
+			if (symbol == null)
+			{
+				Console.WriteLine(" ");
+				return;
+			}
+			if (string.Equals(symbol, "X", StringComparison.OrdinalIgnoreCase))
+			{
+				Console.ForegroundColor = ConsoleColor.DarkGreen;
+				Console.Write(symbol);
+				Console.ResetColor();
+			}
+			else if (string.Equals(symbol, "O", StringComparison.OrdinalIgnoreCase))
+			{
+				Console.ForegroundColor = ConsoleColor.DarkRed;
+				Console.Write(symbol);
+				Console.ResetColor();
+			}
+			else
+			{
+				Console.Write(symbol);
+			}
 		}
 	}
 }
